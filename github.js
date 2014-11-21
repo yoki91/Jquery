@@ -1,6 +1,7 @@
 var API_BASE_URL = "https://api.github.com";
 var USERNAME;
 var PASSWORD;
+var numberP=1;
 
 
 
@@ -77,15 +78,24 @@ $("#button_get_repos_paginado").click(function(e)
 });
 
 
-
-
-
 $("#get_email").click(function(e)
 {
 	e.preventDefault();
 	get_email();
 });
 
+$("#button_get_previous_repos").click(function(e)
+{
+	e.preventDefault();
+	get_previousRpos(numberP=numberP-1);
+});
+
+
+$("#button_get_next_repos").click(function(e)
+{
+	e.preventDefault();
+	get_nextRepos(numberP=numberP+1);
+});
 
 
 
@@ -136,6 +146,8 @@ function getRepos()
 	});
 
 }
+
+
 
 function getRepo(repository_name) 
 {
@@ -277,8 +289,10 @@ function deleteRepos(repository_name)
 
 function getRepos_Paginado()
 {
-	var url = API_BASE_URL+'/users/'+USERNAME +'/repos?page=1&per_page=3';
+	var url = API_BASE_URL+'/users/'+USERNAME +'/repos?page='+numberP+'&per_page=3';
+	console.log(url);
 	$("#repos_result").text('');
+	$("#page").text(numberP);
 	
 	$.ajax
 	({
@@ -289,7 +303,7 @@ function getRepos_Paginado()
 	}).done(function(data, status, jqxhr) 
 	{
 				var repos = data;
-				//var link = jqxhr.getResponseHeader('Link');
+				/*//var link = jqxhr.getResponseHeader('Link');
 				//var valor=JSON.parse(jqxhr.getAllResponseHeaders());
 				//var enlace =JSON.parse(valor);
 				//var enlace=$.parseJSON(valor);
@@ -297,18 +311,13 @@ function getRepos_Paginado()
 				//var valorJ=JSON.parse(valor);
 				console.log(valor);
 				//console.log(valorJ);
-				console.log(valor.Link);
-
-
-
-
-				
+				console.log(valor.Link);*/
 				$.each(repos, function(i, v) 
 				{
 					var repo = v;
 
                     //$('<strong> Link: </strong> ' + link + '<br>').appendTo($('#repos_result'));
-                    $('<h4> Name: ' + valor + '</h4>').appendTo($('#repos_result'));
+                    //$('<h4> Name: ' + valor + '</h4>').appendTo($('#repos_result'));
 					$('<h4> Name: ' + repo.name + '</h4>').appendTo($('#repos_result'));
 					$('<p>').appendTo($('#repos_result'));	
 					$('<strong> ID: </strong> ' + repo.id + '<br>').appendTo($('#repos_result'));
@@ -316,11 +325,137 @@ function getRepos_Paginado()
 					$('<strong> Description: </strong> ' + repo.description + '<br>').appendTo($('#repos_result'));
 					$('</p>').appendTo($('#repos_result'));
 				});
+		 if(numberP==1)
+		{
+		   $('#button_get_previous_repos').attr("disabled",true);
+
+		}
+		else
+		{
+
+		}
 				
 
 	}).fail(function() {
 		$("#repos_result").text("No repositories.");
 	});
+
+}
+
+
+function get_previousRpos(prenumber)
+{
+	var url = API_BASE_URL+'/users/'+USERNAME +'/repos?page='+prenumber +'&per_page=3';
+    $("#repos_result").text('');
+    $("#page").text(prenumber);
+	
+	$.ajax
+	({
+		url : url,
+		type : 'GET',
+		crossDomain : true,
+		dataType : 'json',
+	}).done(function(data, status, jqxhr)
+	{
+		var repos = data;
+		$.each(repos, function(i, v) 
+				{
+					var repo = v;
+
+                    //$('<strong> Link: </strong> ' + link + '<br>').appendTo($('#repos_result'));
+                    //$('<h4> Name: ' + valor + '</h4>').appendTo($('#repos_result'));
+                    
+					$('<h4> Name: ' + repo.name + '</h4>').appendTo($('#repos_result'));
+					$('<p>').appendTo($('#repos_result'));	
+					$('<strong> ID: </strong> ' + repo.id + '<br>').appendTo($('#repos_result'));
+					$('<strong> URL: </strong> ' + repo.html_url + '<br>').appendTo($('#repos_result'));
+					$('<strong> Description: </strong> ' + repo.description + '<br>').appendTo($('#repos_result'));
+					$('</p>').appendTo($('#repos_result'));
+				});
+		if(prenumber==1)
+		{
+			$('#button_get_previous_repos').attr("disabled",true);
+
+		}
+		else
+		{
+
+		}
+		if(data!== "")
+		{
+			$('#button_get_next_repos').removeAttr("disabled");
+
+		}
+		else
+		{
+
+		}
+
+
+	}).fail(function() 
+	{
+		$("#repos_result").text("No repositories.");
+	});
+
+
+
+}
+
+function get_nextRepos(nexnumber)
+{
+	var url = API_BASE_URL+'/users/'+USERNAME +'/repos?page='+nexnumber +'&per_page=3';
+    $("#repos_result").text('');
+    $("#page").text(nexnumber);
+	
+	$.ajax
+	({
+		url : url,
+		type : 'GET',
+		crossDomain : true,
+		dataType : 'json',
+	}).done(function(data, status, jqxhr)
+	{
+		var repos = data;
+		$.each(repos, function(i, v) 
+				{
+					var repo = v;
+
+                    //$('<strong> Link: </strong> ' + link + '<br>').appendTo($('#repos_result'));
+                    //$('<h4> Name: ' + valor + '</h4>').appendTo($('#repos_result'));
+					$('<h4> Name: ' + repo.name + '</h4>').appendTo($('#repos_result'));
+					$('<p>').appendTo($('#repos_result'));	
+					$('<strong> ID: </strong> ' + repo.id + '<br>').appendTo($('#repos_result'));
+					$('<strong> URL: </strong> ' + repo.html_url + '<br>').appendTo($('#repos_result'));
+					$('<strong> Description: </strong> ' + repo.description + '<br>').appendTo($('#repos_result'));
+					$('</p>').appendTo($('#repos_result'));
+				});
+		if(nexnumber>1)
+		{
+			$('#button_get_previous_repos').removeAttr("disabled");
+
+		}
+		else
+		{
+
+		}
+
+
+	    if(data== "")
+		{
+			$('#button_get_next_repos').attr("disabled",true);
+			$("#repos_result").text("No  more repositories.");
+			
+		}
+		else
+		{
+
+		}
+	}).fail(function() 
+	{
+		$("#repos_result").text("No repositories.");
+	});
+
+
 
 }
 
